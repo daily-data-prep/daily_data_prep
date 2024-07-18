@@ -1,1 +1,71 @@
-<h1>Welcome to the daily-data-prep</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Repositories</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .repository {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .repository h2 {
+            margin-top: 0;
+        }
+        .readme {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to daily-data-prep</h1>
+    <div id="repositories"></div>
+
+    <script>
+        async function fetchRepositories(username) {
+            const reposResponse = await fetch(`https://api.github.com/users/${username}/repos`);
+            const repos = await reposResponse.json();
+
+            const repositoriesDiv = document.getElementById('repositories');
+
+            for (let repo of repos) {
+                const repoDiv = document.createElement('div');
+                repoDiv.className = 'repository';
+                
+                const repoName = document.createElement('h2');
+                repoName.textContent = repo.name;
+                repoDiv.appendChild(repoName);
+
+                const readmeResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/readme`, {
+                    headers: { 'Accept': 'application/vnd.github.v3.html' }
+                });
+
+                if (readmeResponse.ok) {
+                    const readmeHtml = await readmeResponse.text();
+                    const readmeDiv = document.createElement('div');
+                    readmeDiv.className = 'readme';
+                    readmeDiv.innerHTML = readmeHtml;
+                    repoDiv.appendChild(readmeDiv);
+                } else {
+                    const noReadme = document.createElement('p');
+                    noReadme.textContent = 'No README found for this repository.';
+                    repoDiv.appendChild(noReadme);
+                }
+
+                repositoriesDiv.appendChild(repoDiv);
+            }
+        }
+
+        fetchRepositories('daily-data-prep');
+    </script>
+</body>
+</html>
