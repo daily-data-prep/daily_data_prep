@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to daily-data-prep</h1>
+    <h1>GitHub Repositories and READMEs</h1>
     <div id="repositories"></div>
 
     <script>
@@ -42,7 +42,11 @@
                 repoDiv.className = 'repository';
                 
                 const repoName = document.createElement('h2');
-                repoName.textContent = repo.name;
+                const repoLink = document.createElement('a');
+                repoLink.href = repo.html_url;
+                repoLink.target = '_blank';
+                repoLink.textContent = repo.name;
+                repoName.appendChild(repoLink);
                 repoDiv.appendChild(repoName);
 
                 const readmeResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/readme`, {
